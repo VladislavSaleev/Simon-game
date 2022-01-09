@@ -154,4 +154,9 @@ export default {
   flex-direction: row;
   justify-content: center;
 }
+@media screen and (max-width: 1200px) {
+  .wrapper {
+    flex-direction: column;
+  }
+}
 </style>

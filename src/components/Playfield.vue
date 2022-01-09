@@ -63,4 +63,17 @@ export default {
 .opacity {
   opacity: 1;
 }
+@media screen and (max-width: 1200px) {
+  .field-wrapper {
+    width: 330px;
+    height: 320px;
+    margin-left: 0px;
+    margin-right: 0px;
+    align-self: center;
+  }
+  .block {
+    width: 140px;
+    height: 140px;
+  }
+}
 </style>

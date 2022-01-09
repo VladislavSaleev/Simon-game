@@ -78,10 +78,11 @@ export default {
 .option-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
 }
 .btn-game {
+  font-family: "Mukta", sans-serif;
   width: 140px;
   height: 65px;
   margin-top: 20px;
@@ -89,7 +90,7 @@ export default {
   background-color: rgb(185, 187, 190);
   border-radius: 5px;
   border-top-left-radius: 5px;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
 }
 .score-bar {
@@ -98,11 +99,13 @@ export default {
   background-color: rgb(89, 109, 125);
   align-items: center;
   justify-content: center;
+  border-radius: 10px;
   margin-top: 30px;
   height: 250px;
   width: 300px;
 }
 .score {
+  font-family: "Mukta", sans-serif;
   display: flex;
   height: 60px;
   width: 250px;
@@ -113,6 +116,7 @@ export default {
   color: whitesmoke;
 }
 .current-score {
+  font-family: "Mukta", sans-serif;
   font-weight: bold;
   font-size: 35px;
   color: rgb(25, 214, 222);
@@ -125,23 +129,32 @@ export default {
   background-color: rgb(57, 79, 96);
 }
 .game-level {
+  font-family: "Mukta", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 70px;
   height: 30px;
   text-align: center;
-  background-color: gray;
+  background-color: rgb(110, 110, 110);
   color: white;
-  font-size: 14px;
+  font-size: 15px;
   margin-bottom: 10px;
   user-select: none;
   cursor: pointer;
 }
 .game-level:hover {
-  background-color: rgb(10, 39, 39);
+  background-color: rgb(30, 104, 104);
 }
 .active {
   background-color: black;
+}
+@media screen and (max-width: 1200px) {
+  .score {
+    font-size: 27px;
+  }
+  .current-score {
+    font-size: 29px;
+  }
 }
 </style>
