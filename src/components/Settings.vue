@@ -2,16 +2,16 @@
   <div class="option-wrapper">
     <div class="score-bar">
       <span v-if="isGameStarted" class="score"
-        >Score:<span class="current-score">{{ score }}</span>
+        >Score: <span class="current-score">{{ score }}</span>
       </span>
       <span v-if="!isGameStarted" class="score">{{ boardInfo }}</span>
       <span class="score"
-        >Best score:<span class="current-score">{{ bestScore }}</span>
+        >Best score: <span class="current-score">{{ bestScore }}</span>
       </span>
       <div class="game-settings">
-        <div class="score">Speed:</div>
+        <div class="score">Select difficulty:</div>
         <div class="game-levels">
-          <button
+          <div
             v-for="(level, key, index) in timeDelay"
             :key="index"
             class="game-level"
@@ -19,15 +19,12 @@
             @click="sendCurrentLevel(key)"
           >
             {{ key.toUpperCase() }}
-          </button>
+          </div>
         </div>
       </div>
     </div>
-    <button class="btn-game" v-if="!isGameStarted" @click="sendStartGame">
-      Start
-    </button>
-    <button class="btn-game" v-if="isGameStarted" @click="sendStopGame">
-      Stop
+    <button class="btn-game" @click="sendToggleGameState">
+      {{ this.isGameStarted ? "Stop" : "Start" }}
     </button>
   </div>
 </template>
@@ -64,11 +61,8 @@ export default {
     sendCurrentLevel(key) {
       this.$emit("sendCurrentLevel", key);
     },
-    sendStartGame() {
-      this.$emit("sendStartGame");
-    },
-    sendStopGame() {
-      this.$emit("sendStopGame");
+    sendToggleGameState() {
+      this.$emit("sendToggleGameState");
     },
   },
 };
@@ -84,12 +78,11 @@ export default {
 .btn-game {
   font-family: "Mukta", sans-serif;
   width: 140px;
-  height: 65px;
+  height: 55px;
   margin-top: 20px;
   border: 3px solid teal;
   background-color: rgb(185, 187, 190);
-  border-radius: 5px;
-  border-top-left-radius: 5px;
+  border-radius: 10px;
   font-size: 25px;
   font-weight: bold;
 }
@@ -106,11 +99,9 @@ export default {
 }
 .score {
   font-family: "Mukta", sans-serif;
-  display: flex;
   height: 60px;
   width: 250px;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   background-color: rgb(57, 79, 96);
   font-size: 30px;
   color: whitesmoke;
@@ -139,6 +130,7 @@ export default {
   background-color: rgb(110, 110, 110);
   color: white;
   font-size: 15px;
+  border-radius: 3px;
   margin-bottom: 10px;
   user-select: none;
   cursor: pointer;
@@ -155,6 +147,10 @@ export default {
   }
   .current-score {
     font-size: 29px;
+  }
+  .btn-game {
+    width: 110px;
+    height: 45px;
   }
 }
 </style>

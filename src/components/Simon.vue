@@ -9,8 +9,7 @@
       :timeDelay="timeDelay"
       :currentTimeDelay="currentTimeDelay"
       @sendCurrentLevel="chooseLevel"
-      @sendStartGame="startGame"
-      @sendStopGame="stopGame"
+      @sendToggleGameState="toggleGameState"
     />
   </div>
 </template>
@@ -45,24 +44,22 @@ export default {
         4: "yellow",
       },
       timeDelay: {
-        easy: 1300,
-        normal: 800,
+        easy: 1100,
+        normal: 700,
         hard: 400,
       },
-      currentTimeDelay: 800,
+      currentTimeDelay: 700,
     };
   },
   methods: {
-    startGame() {
-      this.isGameStarted = true;
+    toggleGameState() {
+      this.isGameStarted = !this.isGameStarted;
       this.playerMoves.length = 0;
       this.aiMoves.length = 0;
       this.score = 0;
-      this.aiMove();
-    },
-    stopGame() {
-      this.isGameStarted = false;
-      this.score = 0;
+      if (this.isGameStarted) {
+        this.aiMove();
+      }
     },
     chooseLevel(key) {
       if (!this.isGameStarted) {
@@ -74,52 +71,32 @@ export default {
         this.playSounds(color);
         this.opacityToggle[color] = true;
         this.playerMoves.push(color);
-        if (
-          this.playerMoves.join(", ") == this.aiMoves.join(", ") &&
-          this.playerMoves.length == this.aiMoves.length
-        ) {
-          this.playerMoves.length = 0;
-          this.score += 1;
-          if (this.score >= this.bestScore) {
-            this.bestScore = this.score;
-          }
-          this.aiMove();
-        }
-        this.playerMoves.forEach((el, idx) => {
-          if (this.isGameStarted && el !== this.aiMoves[idx]) {
-            this.boardInfo = "Game over";
-            this.playerMoves.length = 0;
-            this.aiMoves.length = 0;
-            this.playSounds("fail");
-            this.isGameStarted = false;
-          }
-        });
         setTimeout(() => {
           this.opacityToggle[color] = false;
         }, 250);
       }
     },
     aiMove() {
-      if (this.isGameStarted) {
-        setTimeout(() => {
-          this.isClickable = false;
-          let randNum = Math.round(0.5 + Math.random() * 4);
-          this.aiMoves.push(this.nextColor[randNum]);
-          this.aiMoves.forEach((el, idx) => {
-            setTimeout(() => {
-              this.opacityToggle[el] = true;
-              this.playSounds(el);
-              setTimeout(() => {
-                this.opacityToggle[el] = false;
-              }, this.currentTimeDelay * 0.6);
-            }, this.currentTimeDelay * (idx + 1));
-          });
+      setTimeout(() => {
+        this.isClickable = false;
+        let randNum = Math.round(0.5 + Math.random() * 4);
+        this.aiMoves.push(this.nextColor[randNum]);
+        this.aiMoves.forEach((el, idx) => {
           setTimeout(() => {
-            this.isClickable = true;
-          }, this.currentTimeDelay * this.aiMoves.length + 500);
-        }, 300);
-      }
+            this.opacityToggle[el] = true;
+            this.playSounds(el);
+            setTimeout(() => {
+              this.opacityToggle[el] = false;
+            }, this.currentTimeDelay * 0.6);
+          }, this.currentTimeDelay * (idx + 1));
+        });
+        //Allow player click when sequence is over
+        setTimeout(() => {
+          this.isClickable = true;
+        }, this.currentTimeDelay * this.aiMoves.length + 500);
+      }, 300);
     },
+    //Sounds reproduction
     playSounds(color) {
       let audio;
       switch (color) {
@@ -143,6 +120,40 @@ export default {
           audio = new Audio(require("@/sounds/fail.mp3"));
           audio.play();
       }
+    },
+  },
+  watch: {
+    //watching for correctness of player's clicks and run new sequence if all right
+    playerMoves: {
+      handler() {
+        //Correct!
+        if (
+          this.playerMoves.join(", ") == this.aiMoves.join(", ") &&
+          this.playerMoves.length == this.aiMoves.length &&
+          this.playerMoves.length !== 0
+        ) {
+          this.playerMoves.length = 0;
+          this.score += 1;
+          this.aiMove();
+        }
+        //Fail!
+        this.playerMoves.forEach((el, idx) => {
+          if (this.isGameStarted && el !== this.aiMoves[idx]) {
+            this.boardInfo = "Game over";
+            this.toggleGameState();
+            this.playSounds("fail");
+          }
+        });
+      },
+      deep: true,
+    },
+    //update best score
+    score: {
+      handler(newValue) {
+        if (newValue > this.bestScore) {
+          this.bestScore = newValue;
+        }
+      },
     },
   },
 };

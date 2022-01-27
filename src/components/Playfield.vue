@@ -4,25 +4,25 @@
       @click="sendPlayerMove('green')"
       class="block"
       :class="{ opacity: opacityToggle.green }"
-      style="background: green; border-top-left-radius: 50px"
+      style="background: green; border-top-left-radius: 300px"
     ></div>
     <div
       @click="sendPlayerMove('blue')"
       class="block"
       :class="{ opacity: opacityToggle.blue }"
-      style="background: blue; border-top-right-radius: 50px"
+      style="background: blue; border-top-right-radius: 300px"
     ></div>
     <div
       @click="sendPlayerMove('red')"
       class="block"
       :class="{ opacity: opacityToggle.red }"
-      style="background: red; border-bottom-left-radius: 50px"
+      style="background: red; border-bottom-left-radius: 300px"
     ></div>
     <div
       @click="sendPlayerMove('yellow')"
       class="block"
       :class="{ opacity: opacityToggle.yellow }"
-      style="background: yellow; border-bottom-right-radius: 50px"
+      style="background: yellow; border-bottom-right-radius: 300px"
     ></div>
   </div>
 </template>
@@ -53,6 +53,7 @@ export default {
   width: 550px;
   height: 540px;
   margin-right: 50px;
+  user-select: none;
 }
 .block {
   height: 250px;

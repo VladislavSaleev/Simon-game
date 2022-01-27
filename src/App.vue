@@ -23,7 +23,7 @@ export default {
 .game-title {
   font-family: "Mukta", sans-serif;
   text-align: center;
-  color: rgb(157, 211, 211);
+  color: rgb(118, 228, 228);
   font-size: 40px;
 }
 @media screen and (max-width: 1200px) {
