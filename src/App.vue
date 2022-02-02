@@ -18,15 +18,16 @@ export default {
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Mukta&display=swap");
 * {
-  background-color: rgb(54, 57, 63);
+  font-family: "Mukta", sans-serif;
+  background-color: rgb(27, 26, 26);
 }
 .game-title {
-  font-family: "Mukta", sans-serif;
+  /* font-family: "Mukta", sans-serif; */
   text-align: center;
-  color: rgb(118, 228, 228);
+  color: #ccc;
   font-size: 40px;
 }
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 768px) {
   .game-title {
     font-size: 27px;
   }

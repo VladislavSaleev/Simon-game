@@ -1,15 +1,12 @@
 <template>
   <div class="option-wrapper">
-    <div class="score-bar">
-      <span v-if="isGameStarted" class="score"
-        >Score: <span class="current-score">{{ score }}</span>
-      </span>
-      <span v-if="!isGameStarted" class="score">{{ boardInfo }}</span>
-      <span class="score"
-        >Best score: <span class="current-score">{{ bestScore }}</span>
+    <div class="info-bar">
+      <span class="info">{{ boardInfo }}</span>
+      <span class="info"
+        >Best score: <span class="current-info">{{ bestScore }}</span>
       </span>
       <div class="game-settings">
-        <div class="score">Select difficulty:</div>
+        <div class="info">Select difficulty:</div>
         <div class="game-levels">
           <div
             v-for="(level, key, index) in timeDelay"
@@ -32,10 +29,6 @@
 <script>
 export default {
   props: {
-    score: {
-      type: Number,
-      required: true,
-    },
     boardInfo: {
       type: String,
       required: true,
@@ -72,11 +65,11 @@ export default {
 .option-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: center;
+  margin-left: 50px;
 }
 .btn-game {
-  font-family: "Mukta", sans-serif;
   width: 140px;
   height: 55px;
   margin-top: 20px;
@@ -85,8 +78,9 @@ export default {
   border-radius: 10px;
   font-size: 25px;
   font-weight: bold;
+  cursor: pointer;
 }
-.score-bar {
+.info-bar {
   display: flex;
   flex-direction: column;
   background-color: rgb(89, 109, 125);
@@ -97,8 +91,7 @@ export default {
   height: 250px;
   width: 300px;
 }
-.score {
-  font-family: "Mukta", sans-serif;
+.info {
   height: 60px;
   width: 250px;
   text-align: center;
@@ -106,8 +99,7 @@ export default {
   font-size: 30px;
   color: whitesmoke;
 }
-.current-score {
-  font-family: "Mukta", sans-serif;
+.current-info {
   font-weight: bold;
   font-size: 35px;
   color: rgb(25, 214, 222);
@@ -120,7 +112,6 @@ export default {
   background-color: rgb(57, 79, 96);
 }
 .game-level {
-  font-family: "Mukta", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,22 +121,30 @@ export default {
   background-color: rgb(110, 110, 110);
   color: white;
   font-size: 15px;
+  /* font-weight: bold; */
   border-radius: 3px;
   margin-bottom: 10px;
   user-select: none;
   cursor: pointer;
+  transition: all 0.3s;
 }
 .game-level:hover {
   background-color: rgb(30, 104, 104);
 }
 .active {
-  background-color: black;
+  background-color: black !important;
 }
-@media screen and (max-width: 1200px) {
-  .score {
+@media screen and (max-width: 1024px) {
+  .option-wrapper {
+    flex-direction: column-reverse;
+    margin-left: 0;
+  }
+}
+@media screen and (max-width: 768px) {
+  .info {
     font-size: 27px;
   }
-  .current-score {
+  .current-info {
     font-size: 29px;
   }
   .btn-game {

@@ -1,6 +1,10 @@
 <template>
   <div class="wrapper">
-    <Playfield :opacityToggle="opacityToggle" @sendPlayerMove="playerMove" />
+    <Playfield
+      :opacityToggle="opacityToggle"
+      :score="score"
+      @sendPlayerMove="playerMove"
+    />
     <Settings
       :boardInfo="boardInfo"
       :isGameStarted="isGameStarted"
@@ -46,7 +50,7 @@ export default {
       timeDelay: {
         easy: 1100,
         normal: 700,
-        hard: 400,
+        hard: 300,
       },
       currentTimeDelay: 700,
     };
@@ -57,7 +61,9 @@ export default {
       this.playerMoves.length = 0;
       this.aiMoves.length = 0;
       this.score = 0;
+      this.boardInfo = "Press start";
       if (this.isGameStarted) {
+        this.boardInfo = "Follow the steps";
         this.aiMove();
       }
     },
@@ -77,8 +83,9 @@ export default {
       }
     },
     aiMove() {
+      this.isClickable = false;
+      //Run the sequence
       setTimeout(() => {
-        this.isClickable = false;
         let randNum = Math.round(0.5 + Math.random() * 4);
         this.aiMoves.push(this.nextColor[randNum]);
         this.aiMoves.forEach((el, idx) => {
@@ -90,7 +97,7 @@ export default {
             }, this.currentTimeDelay * 0.6);
           }, this.currentTimeDelay * (idx + 1));
         });
-        //Allow player click when sequence is over
+        //Allow player click when sequence is over + 0.5s
         setTimeout(() => {
           this.isClickable = true;
         }, this.currentTimeDelay * this.aiMoves.length + 500);
@@ -123,7 +130,7 @@ export default {
     },
   },
   watch: {
-    //watching for correctness of player's clicks and run new sequence if all right
+    //Watching for correctness of player's clicks and run new sequence if all right
     playerMoves: {
       handler() {
         //Correct!
@@ -139,15 +146,15 @@ export default {
         //Fail!
         this.playerMoves.forEach((el, idx) => {
           if (this.isGameStarted && el !== this.aiMoves[idx]) {
-            this.boardInfo = "Game over";
             this.toggleGameState();
             this.playSounds("fail");
+            this.boardInfo = "Game over";
           }
         });
       },
       deep: true,
     },
-    //update best score
+    //Update best score
     score: {
       handler(newValue) {
         if (newValue > this.bestScore) {
@@ -165,7 +172,7 @@ export default {
   flex-direction: row;
   justify-content: center;
 }
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1024px) {
   .wrapper {
     flex-direction: column;
   }
