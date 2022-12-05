@@ -1,33 +1,48 @@
 <template>
-  <div class="main">
-    <div class="field-wrapper">
+  <div class="field">
+    <div class="field__line">
       <div
-        @click="sendPlayerMove('green')"
-        class="block"
-        :class="{ opacity: opacityToggle.green }"
-        style="background: green; border-radius: 300px 20px 20px 20px"
-      ></div>
+      class="field__block"
+      :class="{ opacity: opacityToggle.green }"
+      style="background: green; border-radius: 300px 20px 20px 20px"
+      @click="onPlayerMove('green')"
+      />
+
       <div
-        @click="sendPlayerMove('blue')"
-        class="block"
-        :class="{ opacity: opacityToggle.blue }"
-        style="background: blue; border-radius: 20px 300px 20px 20px"
-      ></div>
+      class="field__block"
+      :class="{ opacity: opacityToggle.blue }"
+      style="background: blue; border-radius: 20px 300px 20px 20px"
+      @click="onPlayerMove('blue')"
+      />
     </div>
-    <div class="score">{{ score }}</div>
-    <div class="field-wrapper">
+
+    <div class="field__line">
       <div
-        @click="sendPlayerMove('red')"
-        class="block"
-        :class="{ opacity: opacityToggle.red }"
-        style="background: red; border-radius: 20px 20px 20px 300px"
-      ></div>
+      class="field__block"
+      :class="{ opacity: opacityToggle.red }"
+      style="background: red; border-radius: 20px 20px 20px 300px"
+      @click="onPlayerMove('red')"
+      />
+
       <div
-        @click="sendPlayerMove('yellow')"
-        class="block"
-        :class="{ opacity: opacityToggle.yellow }"
-        style="background: yellow; border-radius: 20px 20px 300px 20px"
-      ></div>
+      class="field__block"
+      :class="{ opacity: opacityToggle.yellow }"
+      style="background: yellow; border-radius: 20px 20px 300px 20px"
+      @click="onPlayerMove('yellow')"
+      />
+    </div>
+
+    <div class="center-panel">
+      <div class="center-panel__score">
+        {{ score }}
+      </div>
+
+      <div
+        class="center-panel__button"
+        @click="onToggleGameState"
+      >
+        {{ buttonLabel }}
+      </div>
     </div>
   </div>
 </template>
@@ -41,86 +56,128 @@ export default {
     },
     score: {
       type: Number,
+      default: 0,
+    },
+    isGameStarted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    buttonLabel() {
+      return this.isGameStarted ? 'Stop' : 'Start'
     },
   },
   methods: {
-    sendPlayerMove(color) {
-      this.$emit("sendPlayerMove", color);
+    onPlayerMove(color) {
+      this.$emit("onPlayerMove", color);
     },
+    onToggleGameState() {
+      this.$emit("on-toggle-game-state", !this.isGameStarted);
+    }
   },
 };
 </script>
 
 <style scoped>
-.main {
+.field {
   display: flex;
   position: relative;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* height: 100%;
-  width: 100%; */
 }
-.field-wrapper {
+.field__line {
   display: flex;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   user-select: none;
 }
-.block {
+.field__block {
   height: 250px;
   width: 250px;
   margin: 4px;
   opacity: 0.5;
-  transition: all 0.15s;
+  box-shadow: 0px 0px 5px 1px #000000;
 }
-.block:hover {
+.field__block:hover {
   transform: scale(1.01);
   box-shadow: 0px 0px 10px 2px #000000;
 }
 .opacity {
   opacity: 1;
 }
-.score {
+.center-panel {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   width: 120px;
   height: 120px;
-  background-color: rgb(27, 26, 26);
+  color: #ccc;
+  background-color: rgb(26, 26, 26);
   box-shadow: inset 0px 0px 10px 1px rgba(0, 0, 0, 0.5),
     0px 0px 10px 1px #000000;
-  margin: auto;
-  line-height: 120px;
-  text-align: center;
   border-radius: 50%;
-  color: #ccc;
-  font-size: 70px;
-  font-weight: bold;
   user-select: none;
   z-index: 20;
 }
+.center-panel__button:hover {
+  background-color: rgb(121, 121, 121);
+}
+.center-panel__score {
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: 700;
+  
+}
+.center-panel__button {
+  padding: 6px 12px;
+  border-radius: 10px;
+  margin-top: 5px;
+  font-size: 18px;
+  line-height: 18px;
+  cursor: pointer;
+}
 @media screen and (max-width: 768px) {
-  .block {
+  .field__block {
     width: 200px;
     height: 200px;
   }
-  .score {
+  .center-panel {
     width: 100px;
     height: 100px;
-    font-size: 55px;
-    line-height: 100px;
+  }
+  .center-panel__score {
+    font-size: 36px;
+    line-height: 36px;
+  }
+  .center-panel__button {
+    padding: 4px 8px;
+    font-size: 17px;
+    line-height: 17px;
   }
 }
 @media screen and (max-width: 425px) {
-  .block {
+  .field__block {
     width: 140px;
     height: 140px;
   }
-  .score {
+  .center-panel {
     width: 80px;
     height: 80px;
-    font-size: 45px;
-    line-height: 80px;
+  }
+  .center-panel__score {
+    font-size: 32px;
+    line-height: 32px;
+  }
+  .center-panel__button {
+    padding: 3px 6px;
+    font-size: 16px;
+    line-height: 16px;
   }
 }
 </style>
