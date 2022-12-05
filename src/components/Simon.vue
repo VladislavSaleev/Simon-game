@@ -1,180 +1,178 @@
 <template>
-  <div class="wrapper">
-    <Playfield
-      :opacityToggle="opacityToggle"
+  <div class="game-wrapper">
+    <playfield
+      :opacity-toggle="colorsHighlightState"
       :score="score"
-      @sendPlayerMove="playerMove"
+      :is-game-started="isGameStarted"
+      @on-player-move="playerMove"
+      @on-toggle-game-state="toggleGameState"
     />
-    <Settings
-      :boardInfo="boardInfo"
-      :isGameStarted="isGameStarted"
-      :score="score"
-      :bestScore="bestScore"
-      :timeDelay="timeDelay"
-      :currentTimeDelay="currentTimeDelay"
-      @sendCurrentLevel="chooseLevel"
-      @sendToggleGameState="toggleGameState"
+
+    <settings
+      :board-info="boardInfo"
+      :best-score="bestScore"
+      :selected-bot-moves-delay="selectedBotMovesDelay"
+      @on-difficulty-change="chooseDifficulty"
     />
   </div>
 </template>
 
 <script>
-import Settings from "@/components/Settings";
-import Playfield from "@/components/Playfield";
+import settings from "@/components/Settings";
+import playfield from "@/components/Playfield";
 export default {
   components: {
-    Playfield,
-    Settings,
+    playfield,
+    settings,
   },
   data() {
     return {
-      opacityToggle: {
-        green: false,
-        blue: false,
-        red: false,
-        yellow: false,
-      },
       isGameStarted: false,
       playerMoves: [],
-      aiMoves: [],
-      isClickable: true,
+      botMoves: [],
+      isPlayerCanMove: true,
       score: 0,
       bestScore: 0,
       boardInfo: "Press start",
-      nextColor: {
+      colorList: {
         1: "green",
         2: "blue",
         3: "red",
         4: "yellow",
       },
-      timeDelay: {
-        easy: 1100,
-        normal: 700,
-        hard: 300,
+      colorsHighlightState: {
+        green: false,
+        blue: false,
+        red: false,
+        yellow: false,
       },
-      currentTimeDelay: 700,
+      selectedBotMovesDelay: 700,
     };
   },
   methods: {
-    toggleGameState() {
-      this.isGameStarted = !this.isGameStarted;
-      this.playerMoves.length = 0;
-      this.aiMoves.length = 0;
-      this.score = 0;
+    toggleGameState(gameState) {
+      this.isGameStarted = gameState;
       this.boardInfo = "Press start";
-      if (this.isGameStarted) {
+      this.resetCounters();
+      if (gameState) {
         this.boardInfo = "Follow the steps";
-        this.aiMove();
+        this.botMove();
       }
     },
-    chooseLevel(key) {
-      if (!this.isGameStarted) {
-        this.currentTimeDelay = this.timeDelay[key];
+    resetCounters() {
+      this.playerMoves.length = 0;
+      this.botMoves.length = 0;
+      this.score = 0;
+    },
+    chooseDifficulty(level) {
+      if (this.isPlayerCanMove) {
+        this.selectedBotMovesDelay = level;
       }
     },
     playerMove(color) {
-      if (this.isClickable) {
-        this.playSounds(color);
-        this.opacityToggle[color] = true;
+      if (this.isPlayerCanMove) {
+        this.colorsHighlightState[color] = true;
         this.playerMoves.push(color);
+        this.playSound(color);
+
         setTimeout(() => {
-          this.opacityToggle[color] = false;
+          this.colorsHighlightState[color] = false;
         }, 250);
       }
     },
-    aiMove() {
-      this.isClickable = false;
+    botMove() {
+      this.isPlayerCanMove = false;
       //Run the sequence
       setTimeout(() => {
-        let randNum = Math.round(0.5 + Math.random() * 4);
-        this.aiMoves.push(this.nextColor[randNum]);
-        this.aiMoves.forEach((el, idx) => {
+        let randomColorId = Math.round(0.5 + Math.random() * 4);
+        this.botMoves.push(this.colorList[randomColorId]);
+        this.botMoves.forEach((step, idx) => {
           setTimeout(() => {
-            this.opacityToggle[el] = true;
-            this.playSounds(el);
+            this.colorsHighlightState[step] = true;
+
+            this.playSound(step);
+
             setTimeout(() => {
-              this.opacityToggle[el] = false;
-            }, this.currentTimeDelay * 0.6);
-          }, this.currentTimeDelay * (idx + 1));
+              this.colorsHighlightState[step] = false;
+            }, this.selectedBotMovesDelay * 0.6);
+          }, this.selectedBotMovesDelay * (idx + 1));
         });
         //Allow player click when sequence is over + 0.5s
         setTimeout(() => {
-          this.isClickable = true;
-        }, this.currentTimeDelay * this.aiMoves.length + 500);
+          this.isPlayerCanMove = true;
+        }, this.selectedBotMovesDelay * this.botMoves.length + 500);
       }, 300);
     },
-    //Sounds reproduction
-    playSounds(color) {
-      let audio;
+    playSound(color) {
+      let sound;
       switch (color) {
         case "green":
-          audio = new Audio(require("@/sounds/1piano-do.mp3"));
-          audio.play();
+          sound = new Audio(require("@/sounds/1piano-do.mp3"));
           break;
         case "blue":
-          audio = new Audio(require("@/sounds/2piano-re.mp3"));
-          audio.play();
+          sound = new Audio(require("@/sounds/2piano-re.mp3"));
           break;
         case "red":
-          audio = new Audio(require("@/sounds/3piano-mi.mp3"));
-          audio.play();
+          sound = new Audio(require("@/sounds/3piano-mi.mp3"));
           break;
         case "yellow":
-          audio = new Audio(require("@/sounds/4piano-fa.mp3"));
-          audio.play();
+          sound = new Audio(require("@/sounds/4piano-fa.mp3"));
           break;
         case "fail":
-          audio = new Audio(require("@/sounds/fail.mp3"));
-          audio.play();
+          sound = new Audio(require("@/sounds/fail.mp3"));
       }
+      sound.play();
     },
   },
   watch: {
-    //Watching for correctness of player's clicks and run new sequence if all right
+    // Watching for correctness of player's clicks and run new sequence if all right
     playerMoves: {
       handler() {
-        //Correct!
+        // Correct!
         if (
-          this.playerMoves.join(", ") == this.aiMoves.join(", ") &&
-          this.playerMoves.length == this.aiMoves.length &&
-          this.playerMoves.length !== 0
+          this.playerMoves.join("") === this.botMoves.join("") &&
+          this.playerMoves.length === this.botMoves.length &&
+          this.playerMoves.length
         ) {
           this.playerMoves.length = 0;
-          this.score += 1;
-          this.aiMove();
+          this.score++;
+
+          this.botMove();
         }
-        //Fail!
-        this.playerMoves.forEach((el, idx) => {
-          if (this.isGameStarted && el !== this.aiMoves[idx]) {
-            this.toggleGameState();
-            this.playSounds("fail");
+        // Fail!
+        this.playerMoves.forEach((step, idx) => {
+          if (this.isGameStarted && step !== this.botMoves[idx]) {
             this.boardInfo = "Game over";
+
+            this.toggleGameState(false);
+            this.playSound("fail");
           }
         });
       },
       deep: true,
     },
-    //Update best score
-    score: {
-      handler(newValue) {
-        if (newValue > this.bestScore) {
-          this.bestScore = newValue;
-        }
-      },
+    score(newScore) {
+      if (newScore > this.bestScore) {
+        this.bestScore = newScore;
+
+        localStorage.setItem('stored-best-score', newScore);
+      }
     },
+  },
+  created() {
+    const storedBestScore = localStorage.getItem('stored-best-score');
+
+    storedBestScore ? this.bestScore = storedBestScore : this.bestScore = 0;
   },
 };
 </script>
 
 <style scoped>
-.wrapper {
+.game-wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-}
-@media screen and (max-width: 1024px) {
-  .wrapper {
-    flex-direction: column;
-  }
+  align-items: center;
+  gap: 30px;
 }
 </style>
